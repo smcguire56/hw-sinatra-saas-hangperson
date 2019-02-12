@@ -8,10 +8,53 @@ class HangpersonGame
   # def initialize()
   # end
   
+  # local variables
+  attr_accessor :word
+  attr_accessor :guesses
+  attr_accessor :wrong_guesses
+  
+  # create a new instance of the game
   def initialize(word)
     @word = word
+    @guesses = ''
+    @wrong_guesses = ''
   end
 
+  # guess passing in the character to check if is equal, either appending to the guesses or wrong_guesses variables.
+  def guess(char)
+    raise ArgumentError if char == nil or char.empty? or not char.match (/[a-zA-Z]/)
+    char.downcase!
+    
+    if @word.downcase.include? char and not @guesses.include? char
+      @guesses << char
+    elsif not @word.downcase.include? char and not @wrong_guesses.include? char
+      @wrong_guesses << char
+    else
+      return false
+    end
+  end
+  
+  # words wih mising chars
+  def word_with_guesses
+      if @guesses.empty?
+        return @word.gsub(/./, '-') 
+       else 
+         return @word.gsub(/[^#{@guesses}]/, '-')
+      end 
+  end
+  
+  
+  # win state or lose state 
+  def check_win_or_lose
+    
+    if word_with_guesses.include? "-" and wrong_guesses.length == 7
+      return :lose
+    elsif not word_with_guesses.include? "-"
+      return :win
+    else
+      return :play
+    end
+  end
   # You can test it by running $ bundle exec irb -I. -r app.rb
   # And then in the irb: irb(main):001:0> HangpersonGame.get_random_word
   #  => "cooking"   <-- some random word
